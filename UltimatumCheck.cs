@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.CompilerServices;
 using ExileCore;
 using ExileCore.PoEMemory;
@@ -10,9 +9,6 @@ using ExileCore.Shared.Cache;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using SharpDX;
-using System.Collections.Generic;
-using ExileCore.Shared;
-using System.Diagnostics;
 
 namespace UltimatumCheck;
 
