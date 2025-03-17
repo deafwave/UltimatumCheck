@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using ExileCore;
 using ExileCore.PoEMemory;
@@ -9,16 +10,20 @@ using ExileCore.Shared.Cache;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using SharpDX;
+using System.Collections.Generic;
+using ExileCore.Shared;
+using System.Diagnostics;
 
 namespace UltimatumCheck;
 
 public class UltimatumCheck : BaseSettingsPlugin<UltimatumCheckSettings>
 {
     private readonly ConditionalWeakTable<Entity, CachedValue<Element>> _entityMapping = new();
+    private readonly UltimatumModRanker _modRanker = new();
 
     public override bool Initialise()
     {
-        return true;
+        return base.Initialise();
     }
 
     public override Job Tick()
@@ -40,31 +45,33 @@ public class UltimatumCheck : BaseSettingsPlugin<UltimatumCheckSettings>
             var choicesPanel = element?.GetChildFromIndices(0, 0, 2)?.AsObject<UltimatumChoicePanel>();
             if (choicesPanel is { IsVisible: true })
             {
+                // In World
                 DrawModifierOptions(choicesPanel);
             }
         }
 
         if (GameController.IngameState.IngameUi.UltimatumPanel is { IsVisible: true, ChoicesPanel: { } panel })
         {
+            // Stopped World
             DrawModifierOptions(panel);
         }
     }
 
     private void DrawModifierOptions(UltimatumChoicePanel panel)
     {
+        var modIds = panel.Modifiers.Select(m => m.Id).ToList();
+        var bestModId = _modRanker.GetBestChoice(modIds);
+
         foreach (var ((element, modifier), index) in panel.ChoiceElements.Zip(panel.Modifiers).Select((x, i) => (x, i)))
         {
-            Color modColor = Settings.UltimatumModRanking.GetModifierTier(modifier.Id) switch
+            var rect = element.GetClientRectCache;
+            if (modifier.Id == bestModId)
             {
-                1 => Settings.Rank1Color,
-                2 => Settings.Rank2Color,
-                3 => Settings.Rank3Color,
-                _ => Color.Gray
-            };
-            Graphics.DrawFrame(
-                element.GetClientRectCache.TopLeft.ToVector2Num(),
-                element.GetClientRectCache.BottomRight.ToVector2Num(),
-                modColor, Settings.FrameThickness + (panel.SelectedChoice == index ? 5 : 0));
+                Graphics.DrawFrame(
+                    rect.TopLeft.ToVector2Num(),
+                    rect.BottomRight.ToVector2Num(),
+                    Color.Cyan, Settings.FrameThickness + (panel.SelectedChoice == index ? 5 : 0));
+            }
         }
     }
 }

@@ -19,9 +19,7 @@ public class UltimatumCheckSettings : ISettings
     //There's a bunch of ready-made setting nodes,
     //nested menu support and even custom callbacks are supported.
     //If you want to override DrawSettings instead, you better have a very good reason.
-    public ColorNode Rank1Color { get; set; } = new(Color.Green);
-    public ColorNode Rank2Color { get; set; } = new(Color.Yellow);
-    public ColorNode Rank3Color { get; set; } = new(Color.Red);
+    public ColorNode PickColor { get; set; } = new(Color.Cyan);
     public RangeNode<int> FrameThickness { get; set; } = new(3, 0, 10);
     public UltimatumModRanking UltimatumModRanking { get; set; } = new();
 }
